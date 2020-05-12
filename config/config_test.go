@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
+var (
+	FindSecretFilePath = findSecretFilePath
+)
+
 func TestGetTeleConfigObj(t *testing.T) {
 	Init()
 	obj := GetTeleConfigObj()
@@ -37,5 +41,12 @@ func TestGetNameConfigObj(t *testing.T) {
 	val := obj.StoreLinkColumn
 	if val != "T" {
 		t.Errorf("Expect T - Receive %+v", val)
+	}
+}
+
+func TestFindSecretFilePath(t *testing.T) {
+	path, err := findSecretFilePath("googlesheet_template.env")
+	if err != nil {
+		t.Errorf("findSecretFilePath err : %+v - %+v", err, path)
 	}
 }

@@ -2,7 +2,7 @@ package config
 
 import (
 	"log"
-	"runtime"
+	"path/filepath"
 
 	"github.com/spf13/viper"
 )
@@ -14,6 +14,7 @@ var (
 
 //GgsConfigObj contains config for google sheet API
 type GgsConfigObj struct {
+	Filename      string
 	Path          string
 	LinkSheetID   string
 	LinkTableName string
@@ -35,15 +36,32 @@ func ggsConfigInit() {
 	}
 }
 
+func findSecretFilePath(fileName string) (string, error) {
+	var path string
+	var err error
+	base, err := filepath.Abs("../config_file/")
+	path = filepath.Join(base, fileName)
+	if fileExist(path) {
+		return path, err
+	}
+	base, err = filepath.Abs("../../config_file/")
+	path = filepath.Join(base, fileName)
+	if fileExist(path) {
+		return path, err
+	}
+	return "", err
+}
+
 func ggsConfigObjInit() {
 	var path string
-	if runtime.GOOS == "windows" {
-		path = ggsConfig.GetString("WINDOWSGGSSCRPATH")
-	} else {
-		path = ggsConfig.GetString("LINUXGGSSCRPATH")
+	filename := ggsConfig.GetString("FILENAME")
+	path, err := findSecretFilePath(filename)
+	if err != nil {
+		log.Fatalf("ggsConfigObjInit - find secret file : %+v", err)
 	}
 
 	ggsConfigObj = &GgsConfigObj{
+		Filename:      filename,
 		Path:          path,
 		LinkSheetID:   ggsConfig.GetString("LINKSPREADSHEETID"),
 		LinkTableName: ggsConfig.GetString("LINKTABLENAME"),
