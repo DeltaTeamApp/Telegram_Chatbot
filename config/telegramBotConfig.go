@@ -28,7 +28,7 @@ func teleConfigInit() {
 	teleConfig.SetConfigName("telebot_secret")
 	teleConfig.SetConfigType("env")
 
-	teleConfig.AddConfigPath(".")
+	teleConfig.AddConfigPath("./config_file/")
 	teleConfig.AddConfigPath("../../config_file/")
 	teleConfig.AddConfigPath("../config_file/")
 

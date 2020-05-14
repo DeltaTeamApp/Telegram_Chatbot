@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"sync"
 )
 
 var (
@@ -44,7 +43,8 @@ type linkCountType struct {
 	Count int `json:"count"`
 }
 
-func countLink() int {
+//CountLink show how many link has been create with env API key
+func CountLink() int {
 	//START : read number of shortlink created
 	req, err := http.NewRequest("GET", "https://api.rebrandly.com/v1/links/count", nil)
 	if err != nil {
@@ -78,65 +78,64 @@ func countLink() int {
 }
 
 //CreateShortLink create short link with rebrandly
-func CreateShortLink(inputLink []string, inputSlashTag []string) (result []string, successCount int, errorCount int) {
+func CreateShortLink(inputLink []string, inputSlashTag []string) (results []string, successCount int, errorCount int) {
 	if len(inputLink) != len(inputSlashTag) {
 		log.Println("Pkg: rebrandly - CreateShortLink - Length not match")
-		result = append(result, "Pkg: rebrandly - CreateShortLink - Length not match")
-		return result, -1, -1
+		results = append(results, "Pkg: rebrandly - CreateShortLink - Length not match")
+		return results, -1, -1
 	}
 	loadConfig()
 
-	resultArr := make([]string, len(inputLink))
-	steps := int(len(inputLink) / concurentNum)
+	processLength := len(inputLink)
+
+	resultArr := make([]string, processLength)
+	// log.Printf("resultArr length : %+v \n", len(resultArr))
+	steps := int(processLength / concurentNum)
 
 	errChan := make(chan int8)
 	defer close(errChan)
 
-	var wg sync.WaitGroup
-	wg.Add(concurentNum)
-	for i := 0; i < concurentNum-1; i++ {
-		go func(conI int) {
-			for j := conI * steps; j < (conI+1)*steps; j++ {
+	for i := 0; i < concurentNum; i++ {
+		go func(id int) {
+			for j := id * steps; j < (id+1)*steps; j++ {
+				// log.Println("Process : ", j)
 				var err error
-				resultArr[conI], err = shortLink(inputLink[conI], inputSlashTag[conI])
-				if err != nil {
+				resultArr[j], err = shortLink(inputLink[j], inputSlashTag[j])
+				if err == nil {
+					errChan <- 0
+				} else {
 					errChan <- 1
 				}
-				errChan <- 0
 			}
-			wg.Done()
 		}(i)
 	}
 
 	go func() {
-		for i := concurentNum * steps; i < len(resultArr); i++ {
+		for num := (concurentNum) * steps; num < processLength; num++ {
+			// log.Println("Process : ", num)
 			var err error
-			resultArr[i], err = shortLink(inputLink[i], inputSlashTag[i])
-			if err != nil {
+			resultArr[num], err = shortLink(inputLink[num], inputSlashTag[num])
+			if err == nil {
+				errChan <- 0
+			} else {
 				errChan <- 1
 			}
-			errChan <- 0
-			wg.Done()
 		}
-		errChan <- 2
 	}()
 
-	select {
-	case sig := <-errChan:
-		if sig == 0 {
-			successCount++
-		} else {
-			if sig == 1 {
-				errorCount++
+	for k := 0; k < processLength; k++ {
+		log.Println("chan : ", k)
+		select {
+		case sig := <-errChan:
+			if sig == 0 {
+				successCount++
 			} else {
-				break
+				errorCount++
 			}
 		}
 	}
 
-	wg.Wait()
+	copy(results, resultArr)
 
-	copy(result, resultArr)
-
-	return result, successCount, errorCount
+	return results, successCount, errorCount
 }

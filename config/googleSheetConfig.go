@@ -27,7 +27,7 @@ func ggsConfigInit() {
 	ggsConfig.SetConfigName("googlesheet_secret")
 	ggsConfig.SetConfigType("env")
 
-	ggsConfig.AddConfigPath(".")
+	ggsConfig.AddConfigPath("./config_file/")
 	ggsConfig.AddConfigPath("../../config_file/")
 	ggsConfig.AddConfigPath("../config_file/")
 
@@ -40,6 +40,11 @@ func findSecretFilePath(fileName string) (string, error) {
 	var path string
 	var err error
 	base, err := filepath.Abs("../config_file/")
+	path = filepath.Join(base, fileName)
+	if fileExist(path) {
+		return path, err
+	}
+	base, err = filepath.Abs("./config_file/")
 	path = filepath.Join(base, fileName)
 	if fileExist(path) {
 		return path, err

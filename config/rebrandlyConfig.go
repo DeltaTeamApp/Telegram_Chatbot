@@ -40,7 +40,7 @@ func rbConfigInit() {
 	rbConfig.SetConfigName("rb_secret")
 	rbConfig.SetConfigType("env")
 
-	rbConfig.AddConfigPath(".")
+	rbConfig.AddConfigPath("./config_file/")
 	rbConfig.AddConfigPath("../../config_file/")
 	rbConfig.AddConfigPath("../config_file/")
 

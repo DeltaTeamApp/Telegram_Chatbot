@@ -11,18 +11,17 @@ import (
 	"google.golang.org/api/sheets/v4"
 )
 
+var (
+	ggSheetService = new(sheets.Service)
+)
+
 //GetDataFromRage get data from given range and sheetID
 func GetDataFromRage(sheetID string, table string, col1 string, firstNum int, col2 string, secondNum int) (rows []string) {
 	spreadsheetID := sheetID
 	sheetRange := parseRange(col1, firstNum, col2, secondNum)
 	readRange := table + "!" + sheetRange
 	//create a service
-	srv, err := createGGService()
-	if err != nil {
-		log.Printf("\nPkg: ggsheet - GetDataFromRage - create srv: %+v \n", err)
-		rows = append(rows, "Pkg: ggsheet - GetDataFromRage - create srv")
-		return rows
-	}
+	srv := ggSheetService
 
 	//fetch data
 	resp, err := srv.Spreadsheets.Values.Get(spreadsheetID, readRange).Do()
@@ -46,30 +45,27 @@ func GetDataFromRage(sheetID string, table string, col1 string, firstNum int, co
 	return rows
 }
 
-func createGGService() (*sheets.Service, error) {
+//ServiceGGSheetInit create a service to google sheet
+func ServiceGGSheetInit() {
 	ggsConfig := config.GetGgsConfigObj()
 
+	var err error
 	data, err := ioutil.ReadFile(ggsConfig.Path)
 	if err != nil {
-		log.Printf("\nPkg: ggsheet - createClient - cannot read file : %+v\n", err)
-		return nil, err
+		log.Fatalf("\nPkg: ggsheet - createClient - cannot read file : %+v\n", err)
 	}
 
 	ggConfig, err := google.JWTConfigFromJSON(data, sheets.SpreadsheetsScope)
 	if err != nil {
-		log.Printf("\nPkg: ggsheet - createClient - cannot parse config : %+v\n", err)
-		return nil, err
+		log.Fatalf("\nPkg: ggsheet - createClient - cannot parse config : %+v\n", err)
 	}
 
 	client := ggConfig.Client(context.TODO())
 
-	srv, err := sheets.New(client)
+	ggSheetService, err = sheets.New(client)
 	if err != nil {
-		log.Printf("\nPkg: ggsheet - createClient - cannot create service : %+v\n", err)
-		return nil, err
+		log.Fatalf("\nPkg: ggsheet - createClient - cannot create service : %+v\n", err)
 	}
-
-	return srv, nil
 }
 
 //NewRange create range with input number and col

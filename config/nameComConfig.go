@@ -25,7 +25,7 @@ func nameConfigInit() {
 	nameConfig.SetConfigName("namedotcom_secret")
 	nameConfig.SetConfigType("env")
 
-	nameConfig.AddConfigPath(".")
+	nameConfig.AddConfigPath("./config_file/")
 	nameConfig.AddConfigPath("../../config_file/")
 	nameConfig.AddConfigPath("../config_file/")
 
