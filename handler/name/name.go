@@ -40,7 +40,7 @@ func forwardLink(link string, tempLink string) (string, error) {
 	resp.Body.Close()
 
 	if resp.StatusCode == 200 {
-		return (tempLink + nameConfigObj.Domain), nil
+		return (tempLink + "." + nameConfigObj.Domain), nil
 	}
 
 	return ("error - " + strconv.Itoa(resp.StatusCode) + tempLink + nameConfigObj.Domain), errors.New("Pkg: name - forwardLink - sth went wrong")
@@ -100,6 +100,10 @@ func CreateFwdLink(inputLinks []string, tempLinks []string) (results []string, s
 		}
 	}
 
-	copy(results, resultArr)
+	for i := 0; i < processLength; i++ {
+		// log.Println(resultArr[i])
+		results = append(results, resultArr[i])
+	}
+
 	return results, successCount, errorCount
 }

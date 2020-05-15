@@ -10,6 +10,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -44,12 +45,16 @@ func GetUpdateChan() chan string {
 //CreateFwdAndShortLinks input is range of google sheet and return msg for create forward links
 func CreateFwdAndShortLinks(arg string) {
 	var msg string
+	CreateFwdAndShortLinksTimer := time.Now()
+
+	msgChan <- "CreateFwdAndShortLinks START"
 	firstNum, secondNum, err := splitArg(arg)
 	if err != nil {
 		msg = "Invalid format"
 		msgChan <- msg
 		return
 	}
+
 	ggsConfigObj := config.GetGgsConfigObj()
 	nameConfigObj := config.GetNameConfigObj()
 	rbConfigObj := config.GetRBConfigObj()
@@ -59,8 +64,8 @@ func CreateFwdAndShortLinks(arg string) {
 
 	fwdresults, fwdsucCount, fwderrCount := name.CreateFwdLink(storeLinks, tempLinks)
 
-	for result := range fwdresults {
-		msg = msg + fmt.Sprintf("%+v\n", result)
+	for i := 0; i < len(fwdresults); i++ {
+		msg = msg + fmt.Sprintf("%+v\n", fwdresults[i])
 	}
 
 	msg = msg + fmt.Sprintf("Success : %+v\nError : %+v\n", fwdsucCount, fwderrCount)
@@ -69,13 +74,18 @@ func CreateFwdAndShortLinks(arg string) {
 	slashTag := ggsheet.GetDataFromRage(ggsConfigObj.LinkSheetID, ggsConfigObj.LinkTableName, rbConfigObj.SlashTagCol, firstNum, rbConfigObj.SlashTagCol, secondNum)
 	shortResults, shortSucCount, errSucCount := rebrandly.CreateShortLink(fwdresults, slashTag)
 	msg = ""
-	for result := range shortResults {
-		msg = msg + fmt.Sprintf("%+v\n", result)
+
+	for i := 0; i < len(shortResults); i++ {
+		msg = msg + fmt.Sprintf("%+v\n", shortResults[i])
 	}
 
 	msg = msg + fmt.Sprintf("Success : %+v\nError : %+v\n", shortSucCount, errSucCount)
+	msgChan <- msg
 	linksCount := rebrandly.CountLink()
-	msg = msg + fmt.Sprintf("Create : %+v\nLeft : %+v", linksCount, 500-linksCount)
+	msg = fmt.Sprintf("REBRANDLY COUNT\nCreated : %+v\nLeft : %+v", linksCount, 500-linksCount)
+	msgChan <- msg
+
+	msg = fmt.Sprintf("CreateFwdAndShortLinks : %+v", time.Since(CreateFwdAndShortLinksTimer))
 	msgChan <- msg
 
 	msg = "exit"

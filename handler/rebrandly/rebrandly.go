@@ -135,7 +135,9 @@ func CreateShortLink(inputLink []string, inputSlashTag []string) (results []stri
 		}
 	}
 
-	copy(results, resultArr)
+	for i := 0; i < processLength; i++ {
+		results = append(results, resultArr[i])
+	}
 
 	return results, successCount, errorCount
 }

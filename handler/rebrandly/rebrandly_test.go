@@ -39,3 +39,12 @@ func TestShortLink(t *testing.T) {
 		t.Errorf("Expect rebrand.ly/2020051401 - Receive : %+v", result)
 	}
 }
+
+func TestCountLink(t *testing.T) {
+	config.Init()
+	loadConfig()
+	val := CountLink()
+	if val == -1 {
+		t.Errorf("Expect unint - Receive %+v", val)
+	}
+}

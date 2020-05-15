@@ -42,7 +42,7 @@ func main() {
 					msg.Text = "createfwshortlink : no argument found"
 				} else {
 					msgChan := controller.GetUpdateChan()
-					controller.CreateFwdAndShortLinks(arg)
+					go controller.CreateFwdAndShortLinks(arg)
 					for newMsg := range msgChan {
 						if newMsg == "exit" {
 							break
@@ -53,13 +53,13 @@ func main() {
 							}
 						}
 					}
-					msg.Text = "createfwshortlink complete"
+					msg.Text = "complete"
 				}
 			default:
 				msg.Text = "Unknown command"
-				if _, err := bot.Send(msg); err != nil {
-					log.Panic(err)
-				}
+			}
+			if _, err := bot.Send(msg); err != nil {
+				log.Panic(err)
 			}
 		}
 	}
