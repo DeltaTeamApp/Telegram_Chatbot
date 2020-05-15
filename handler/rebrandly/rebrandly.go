@@ -124,7 +124,7 @@ func CreateShortLink(inputLink []string, inputSlashTag []string) (results []stri
 	}()
 
 	for k := 0; k < processLength; k++ {
-		log.Println("chan : ", k)
+		// log.Println("chan : ", k)
 		select {
 		case sig := <-errChan:
 			if sig == 0 {

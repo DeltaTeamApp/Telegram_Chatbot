@@ -52,6 +52,9 @@ func CreateFwdAndShortLinks(arg string) {
 	if err != nil {
 		msg = "Invalid format"
 		msgChan <- msg
+
+		msg = "exit"
+		msgChan <- msg
 		return
 	}
 

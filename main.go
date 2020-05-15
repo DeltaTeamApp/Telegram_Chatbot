@@ -48,6 +48,7 @@ func main() {
 							break
 						} else {
 							msg1 := tb.NewMessage(update.Message.Chat.ID, newMsg)
+							msg1.DisableWebPagePreview = true
 							if _, err := bot.Send(msg1); err != nil {
 								log.Panic(err)
 							}
