@@ -56,6 +56,15 @@ func main() {
 					}
 					msg.Text = "complete"
 				}
+
+			case "setrebrandapi":
+				arg := update.Message.CommandArguments()
+				if len(arg) < 1 {
+					msg.Text = "createfwshortlink : no argument found"
+				} else {
+					msg.Text = controller.SetNewRebrandAPIKey(arg)
+				}
+
 			default:
 				msg.Text = "Unknown command"
 			}

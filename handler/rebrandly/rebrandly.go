@@ -141,3 +141,16 @@ func CreateShortLink(inputLink []string, inputSlashTag []string) (results []stri
 
 	return results, successCount, errorCount
 }
+
+//ChangeAPIKey change to new API key
+func ChangeAPIKey(APIKey string) error {
+	loadConfig()
+	bkRbAPIKey := rbConfig.APIKey
+	rbConfig.SetAPIKey(APIKey)
+	testVal := CountLink()
+	if testVal == -1 {
+		rbConfig.SetAPIKey(bkRbAPIKey)
+		return errors.New("Pkg: rebrandly - ChangeAPIKey - Not a valid API Key")
+	}
+	return nil
+}
