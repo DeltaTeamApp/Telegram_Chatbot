@@ -58,12 +58,10 @@ func CreateFwdAndShortLinks(arg string) {
 		return
 	}
 
-	ggsConfigObj := config.GetGgsConfigObj()
-	nameConfigObj := config.GetNameConfigObj()
-	rbConfigObj := config.GetRBConfigObj()
+	shortLinkConfigObj := config.GetShortLinkObj()
 
-	storeLinks := ggsheet.GetDataFromRage(ggsConfigObj.LinkSheetID, ggsConfigObj.LinkTableName, nameConfigObj.StoreLinkColumn, firstNum, nameConfigObj.StoreLinkColumn, secondNum)
-	tempLinks := ggsheet.GetDataFromRage(ggsConfigObj.LinkSheetID, ggsConfigObj.LinkTableName, nameConfigObj.TempLinkColumn, firstNum, nameConfigObj.TempLinkColumn, secondNum)
+	storeLinks := ggsheet.GetDataFromRage(shortLinkConfigObj.SheetID, shortLinkConfigObj.Table, shortLinkConfigObj.StoreLinkCol, firstNum, shortLinkConfigObj.StoreLinkCol, secondNum)
+	tempLinks := ggsheet.GetDataFromRage(shortLinkConfigObj.SheetID, shortLinkConfigObj.Table, shortLinkConfigObj.TempLinkCol, firstNum, shortLinkConfigObj.TempLinkCol, secondNum)
 
 	fwdresults, fwdsucCount, fwderrCount := name.CreateFwdLink(storeLinks, tempLinks)
 
@@ -74,7 +72,7 @@ func CreateFwdAndShortLinks(arg string) {
 	msg = msg + fmt.Sprintf("Success : %+v\nError : %+v\n", fwdsucCount, fwderrCount)
 	msgChan <- msg
 
-	slashTag := ggsheet.GetDataFromRage(ggsConfigObj.LinkSheetID, ggsConfigObj.LinkTableName, rbConfigObj.SlashTagCol, firstNum, rbConfigObj.SlashTagCol, secondNum)
+	slashTag := ggsheet.GetDataFromRage(shortLinkConfigObj.SheetID, shortLinkConfigObj.Table, shortLinkConfigObj.SlashTagCol, firstNum, shortLinkConfigObj.SlashTagCol, secondNum)
 	shortResults, shortSucCount, errSucCount := rebrandly.CreateShortLink(fwdresults, slashTag)
 	msg = ""
 

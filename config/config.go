@@ -17,6 +17,9 @@ func Init() {
 
 	ggsConfigInit()
 	ggsConfigObjInit()
+
+	shortLinkConfigInit()
+	shortLinkObjInit()
 }
 
 func fileExist(path string) bool {
