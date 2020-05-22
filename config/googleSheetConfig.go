@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"log"
 	"path/filepath"
 
@@ -54,7 +55,7 @@ func findSecretFilePath(fileName string) (string, error) {
 	if fileExist(path) {
 		return path, err
 	}
-	return "", err
+	return "", errors.New("Can not find the file")
 }
 
 func ggsConfigObjInit() {

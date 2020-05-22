@@ -3,6 +3,7 @@ package ggsheet
 import (
 	"DeltaTeleBot/config"
 	"context"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strconv"
@@ -49,9 +50,8 @@ func GetDataFromRage(sheetID string, table string, col1 string, firstNum int, co
 	spreadsheetID := sheetID
 	sheetRange := parseRange(col1, firstNum, col2, secondNum)
 	readRange := table + "!" + sheetRange
-	//create a service
-	srv := ggSheetService
 
+	srv := ggSheetService
 	//fetch data
 	resp, err := srv.Spreadsheets.Values.Get(spreadsheetID, readRange).Do()
 	if err != nil {
@@ -74,24 +74,24 @@ func GetDataFromRage(sheetID string, table string, col1 string, firstNum int, co
 	return rows
 }
 
-// //UpdateDataInRange Update data in given range with input value
-// func UpdateDataInRange(sheetID string, table string, col1 string, firstNum int, col2 string, secondNum int, val []string) error {
-// 	preadsheetID := sheetID
-// 	sheetRange := parseRange(col1, firstNum, col2, secondNum)
-// 	updateRange := table + "!" + sheetRange
-// 	//create a service
-// 	srv := ggSheetService
+//UpdateDataInRange Update data in given range with input value
+func UpdateDataInRange(sheetID string, table string, col1 string, firstNum int, col2 string, secondNum int, val []string) error {
+	sheetRange := parseRange(col1, firstNum, col2, secondNum)
+	updateRange := table + "!" + sheetRange
+	//create a service
+	srv := ggSheetService
+	//Create value to update
+	var vr = new(sheets.ValueRange)
+	for _, data := range val {
+		vr.Values = append(vr.Values, []interface{}{data})
+	}
 
-// 	// //Create value to update
-// 	// UpdateVal := &sheets.ValueRange{
-// 	// 	Values: val,
-// 	// }
-// 	//fetch data
-// 	resp, err := srv.Spreadsheets.Values.Update(sheetID, updateRange, UpdateVal).Do()
-// 	if err != nil {
-// 		log.Printf("\nPkg: ggsheet - UpdateDataInRange - Cannot update data: %v \n", err)
-// 		return err
-// 	}
+	fmt.Println(vr)
+	_, err := srv.Spreadsheets.Values.Update(sheetID, updateRange, vr).ValueInputOption("RAW").Do()
+	if err != nil {
+		log.Printf("\nPkg: ggsheet - UpdateDataInRange - Cannot update data: %v \n", err)
+		return err
+	}
 
-// 	return nil
-// }
+	return nil
+}
