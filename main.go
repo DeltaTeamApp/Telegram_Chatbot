@@ -34,7 +34,7 @@ func main() {
 			msg := tb.NewMessage(update.Message.Chat.ID, "")
 			switch update.Message.Command() {
 			case "help":
-				msg.Text = "/createfwshortlink [range]\n" + "/setrebrandapi [Rebrandly API key]"
+				msg.Text = "/createfwshortlink [range]\n" + "/setrebrandapi [Rebrandly API key]\n" + "/gensku [number of SKU]"
 
 			case "createfwshortlink":
 				arg := update.Message.CommandArguments()
