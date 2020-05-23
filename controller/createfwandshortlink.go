@@ -65,7 +65,7 @@ func CreateFwdAndShortLinks(arg string) {
 
 	fwdresults, fwdsucCount, fwderrCount := name.CreateFwdLink(storeLinks, tempLinks)
 
-	err = ggsheet.UpdateDataInRange(shortLinkConfigObj.SheetID, shortLinkConfigObj.Table, "V", firstNum, "V", secondNum, fwdresults)
+	err = ggsheet.UpdateDataInRange(shortLinkConfigObj.SheetID, shortLinkConfigObj.Table, shortLinkConfigObj.MiddleLinkCol, firstNum, shortLinkConfigObj.MiddleLinkCol, secondNum, fwdresults)
 	if err != nil {
 		msg = err.Error()
 		msgChan <- msg
@@ -78,14 +78,14 @@ func CreateFwdAndShortLinks(arg string) {
 		msgChan <- msg
 	}
 
-	msg = fmt.Sprintf("Success : %+v\nError : %+v\n", fwdsucCount, fwderrCount)
+	msg = fmt.Sprintf("NAME.COM\nSuccess : %+v\nError : %+v\n", fwdsucCount, fwderrCount)
 	msgChan <- msg
 
 	slashTag := ggsheet.GetDataFromRage(shortLinkConfigObj.SheetID, shortLinkConfigObj.Table, shortLinkConfigObj.SlashTagCol, firstNum, shortLinkConfigObj.SlashTagCol, secondNum)
 	shortResults, shortSucCount, errSucCount := rebrandly.CreateShortLink(fwdresults, slashTag)
 	msg = ""
 
-	err = ggsheet.UpdateDataInRange(shortLinkConfigObj.SheetID, shortLinkConfigObj.Table, "X", firstNum, "X", secondNum, shortResults)
+	err = ggsheet.UpdateDataInRange(shortLinkConfigObj.SheetID, shortLinkConfigObj.Table, shortLinkConfigObj.ShortLinkCol, firstNum, shortLinkConfigObj.ShortLinkCol, secondNum, shortResults)
 	if err != nil {
 		msg = err.Error()
 		msgChan <- msg
@@ -98,7 +98,7 @@ func CreateFwdAndShortLinks(arg string) {
 		msgChan <- msg
 	}
 
-	msg = fmt.Sprintf("Success : %+v\nError : %+v\n", shortSucCount, errSucCount)
+	msg = fmt.Sprintf("REBRANDLY\nSuccess : %+v\nError : %+v\n", shortSucCount, errSucCount)
 	msgChan <- msg
 
 	linksCount := rebrandly.CountLink()

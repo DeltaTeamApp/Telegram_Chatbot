@@ -14,11 +14,13 @@ var (
 
 //ShortLinkConfigObj ...
 type ShortLinkConfigObj struct {
-	SheetID      string
-	Table        string
-	StoreLinkCol string
-	TempLinkCol  string
-	SlashTagCol  string
+	SheetID       string
+	Table         string
+	StoreLinkCol  string
+	TempLinkCol   string
+	SlashTagCol   string
+	MiddleLinkCol string
+	ShortLinkCol  string
 }
 
 func shortLinkConfigInit() {
@@ -38,11 +40,13 @@ func shortLinkConfigInit() {
 
 func shortLinkObjInit() {
 	shortLinkConfigObj = &ShortLinkConfigObj{
-		SheetID:      shortLinkConfig.GetString("SheetID"),
-		Table:        shortLinkConfig.GetString("Table"),
-		StoreLinkCol: shortLinkConfig.GetString("StoreLinkCol"),
-		TempLinkCol:  shortLinkConfig.GetString("TempLinkCol"),
-		SlashTagCol:  shortLinkConfig.GetString("SlashTag"),
+		SheetID:       shortLinkConfig.GetString("SheetID"),
+		Table:         shortLinkConfig.GetString("Table"),
+		StoreLinkCol:  shortLinkConfig.GetString("StoreLinkCol"),
+		TempLinkCol:   shortLinkConfig.GetString("TempLinkCol"),
+		SlashTagCol:   shortLinkConfig.GetString("SlashTag"),
+		MiddleLinkCol: shortLinkConfig.GetString("MiddleLinkCol"),
+		ShortLinkCol:  shortLinkConfig.GetString("ShortLinkCol"),
 	}
 }
 
