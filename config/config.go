@@ -20,6 +20,9 @@ func Init() {
 
 	shortLinkConfigInit()
 	shortLinkObjInit()
+
+	skuConfigInit()
+	skuConfigObjInit()
 }
 
 func fileExist(path string) bool {

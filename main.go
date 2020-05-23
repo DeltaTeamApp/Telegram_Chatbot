@@ -54,7 +54,27 @@ func main() {
 							}
 						}
 					}
-					msg.Text = "complete"
+					msg.Text = "createfwshortlink complete"
+				}
+			case "gensku":
+				arg := update.Message.CommandArguments()
+				if len(arg) < 1 {
+					msg.Text = "createfwshortlink : no argument found"
+				} else {
+					msgChan := controller.GetUpdateChan()
+					go controller.GenSKU(arg)
+					for newMsg := range msgChan {
+						if newMsg == "exit" {
+							break
+						} else {
+							msg1 := tb.NewMessage(update.Message.Chat.ID, newMsg)
+							msg1.DisableWebPagePreview = true
+							if _, err := bot.Send(msg1); err != nil {
+								log.Panic(err)
+							}
+						}
+					}
+					msg.Text = "gensku complete"
 				}
 
 			case "setrebrandapi":
